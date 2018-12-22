@@ -14,11 +14,20 @@ def sum(x):
        sum += x[i]
     return sum
 
+def mean(x):
+    return sum(x) / len(x)
+
+    
+
 x = [1.5, -0.2, -3.1, 2.6]
-result = sum(x)
+s_result = sum(x)
+m_result = mean(x)
 
 x = np.array([1.5, -0.2, -3.1, 2.6])
-result = sum(x)
+s_result = sum(x)
+m_result = mean(x)
 
 x = np.array([1.5, -0.2, -3.1, 2.6])
-result = np.sum(x)
+s_result = np.sum(x)
+m_result = np.mean(x)
+
