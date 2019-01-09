@@ -21,11 +21,11 @@ def det(A):
     elif m == n == 3:
         return sarrus(A)
     elif m == n >= 4:
-        return det_lagrange(A)
+        return det_laplace(A)
     else:
         return None
     
-def det_lagrange(A):
+def det_laplace(A):
     print(A)
     m, n = np.shape(A)
     #TODO Sistemare il caso in cui entrambi siano nulli
@@ -37,36 +37,25 @@ def det_lagrange(A):
     det_value = 0
     if best_row[0] != -1 or best_column[0] != -1:
         if best_row[1] >= best_column[1]:
-            print("row")
             #loop for row
             for k in range(0, n):
-                print(A[best_row[0]][k])
-                det_value += ((-1) ** (best_row[0] + k)) * A[best_row[0]][k] * det_lagrange(clean_matrix(A, best_row[0], k))
-                #if m == n == 3:
-                    #det_value += (-1 ** (best_row[0] + k)) * A[best_row[0]][k] * det_lagrange(clean_matrix(A, best_row[0], k))
-                #else:
-                    #det_value += (-1 ** (best_row[0] + k)) * A[best_row[0]][k] * det_lagrange(clean_matrix(A, best_row[0], k))
+                det_value += ((-1) ** (best_row[0] + k)) * A[best_row[0]][k] * det_laplace(clean_matrix(A, best_row[0], k))
         else:
             #loop for column
-            print("column")
             for k in range(0, m):
                 print(A[k][best_column[0]])
-                det_value += ((-1) ** (best_column[0] + k)) * A[k][best_column[0]] * det_lagrange(clean_matrix(A, k, best_column[0]))
-                #if m == n == 3:
-                    #det_value += (-1 ** (best_column[0] + k)) * A[k][best_column[0]] * det_lagrange(clean_matrix(A, k, best_column[0]))
-                #else:
-                    #det_value += (-1 ** (best_column[0] + k)) * A[k][best_column[0]] * det_lagrange(clean_matrix(A, k, best_column[0]))
+                det_value += ((-1) ** (best_column[0] + k)) * A[k][best_column[0]] * det_laplace(clean_matrix(A, k, best_column[0]))
     else:
         #if no starting row or column has benn found, choose a random row or column in the range values of the matrix
         choice = random.randint(0,1)
         if choice == 0:
             rand_row = random.randint(0, m - 1)
             for k in range(0, n):
-                det_value += ((-1) ** (rand_row + k)) * A[rand_row][k] * det_lagrange(clean_matrix(A, rand_row, k))
+                det_value += ((-1) ** (rand_row + k)) * A[rand_row][k] * det_laplace(clean_matrix(A, rand_row, k))
         else:
             rand_column = random.randint(0, n - 1)
             for k in range(0, m):
-                det_value += ((-1) ** (rand_column + k)) * A[k][rand_column] * det_lagrange(clean_matrix(A, k, rand_column))
+                det_value += ((-1) ** (rand_column + k)) * A[k][rand_column] * det_laplace(clean_matrix(A, k, rand_column))
     return det_value
         
 
