@@ -19,6 +19,9 @@ test_mat_v = np.array([0, 1, 0])
 test_mat_2 = np.array([[1, 1, -2], [1, -1, 1], [2, 0, -1]])
 test_mat_v_2 = np.array([0, 1, 1])
 
+test_mat_3 = np.array([[1., 1., 1.], [2., 3., 4.], [4., 9., 16.]])
+test_mat_v_3 = np.array([1., 3., 11.])
+
 
 
 def back_substitution(A, b):
@@ -43,23 +46,41 @@ def forward_substitution(A, b):
         x[i] = (b[i] - values_sum) / A[i][i]
     return x
 
-def gaussian_elimination(A, b):
+def gauss_no_pivoting(A, b):
     m, n = A.shape
+    mat = np.copy(A)
+    vet = np.copy(b)
     for i in range(0, n):
-        if A[i][i] == 0:
+        if mat[i][i] == 0:
             for j in range(i+1, n):
-                if A[j][i] != 0:
-                    A, b = swap(A, b, i, j)  
+                if mat[j][i] != 0:
+                    swap(mat, vet, i, j)  
                     break
         else:
            for j in range(i+1, n):
-               if A[j][i] != 0:
-                   m = A[j][i]/A[i][i]
+               if mat[j][i] != 0:
+                   m = mat[j][i]/mat[i][i]
                    for k in range(0, n):
-                       A[j][k] -= A[i][k] * m
-                   b[j] -= b[i] * m
-    return A, b
-        
+                       mat[j][k] -= mat[i][k] * m
+                   vet[j] -= vet[i] * m
+    return mat, vet
+
+def gauss_partial_pivoting(A, b):
+    m, n = A.shape
+    mat = np.copy(A)
+    vet = np.copy(b)
+    for i in range(0, n):
+        max_row = find_max_row(mat, i)
+        if max_row != i:
+            swap(mat, vet, i, max_row)
+        for j in range(i+1, n):
+            if mat[j][i] != 0:
+                m = mat[j][i]/mat[i][i]
+                for k in range(0, n):
+                    mat[j][k] -= mat[i][k] * m
+                vet[j] -= vet[i] * m
+    return mat, vet
+                  
 
 def swap(A, b, i, j):
     m, n = A.shape
@@ -70,4 +91,14 @@ def swap(A, b, i, j):
     temp = b[j]
     b[j] = b[i]
     b[i] = temp
-    return A, b
+
+def find_max_row(A, i):
+    m, n = A.shape
+    max_elem = np.abs(A[i][i])
+    max_row = i
+    for j in range(i+1, n):
+        if np.abs(A[j][i]) > max_elem:
+            max_elem = np.abs(A[j][i])
+            max_row = j
+    return max_row
+    
