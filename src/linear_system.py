@@ -108,8 +108,29 @@ def lu_decomposition_no_pivoting(A):
                     U[j][k] -= U[i][k] * m
     return U, L
     
-def lu_decomposition_partial_pivoting(A, b):
-    pass                  
+def lu_decomposition_pivoting(A):
+    n = len(A)
+    U = np.copy(A)
+    L = np.identity(n)
+    P = np.identity(n)
+    for i in range(0, n):
+        #finding max value in the current column using numpy argmax function
+        #add the index i to the max_row index to take in account the previous steps of the alghoritm
+        #because for every step after the first it consider the examied column starting from the current row
+        max_row = np.abs(U[i:, i]).argmax() + i 
+        print(max_row)
+        #if the max_row index is not equal to current index switch the value
+        if max_row != i:
+            #swap the row
+            U[[i, max_row]] = U[[max_row, i]]
+            P[[i, max_row]] = P[[max_row, i]]
+        for j in range(i+1, n):
+            if U[j][i] != 0:
+                m = U[j][i]/U[i][i]
+                U[j] = U[j] - (m * U[i])
+                L[j, i] = m
+    return U, L, P            
+
 
 def swap(A, b, i, j):
     m, n = A.shape
