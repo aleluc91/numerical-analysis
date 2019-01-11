@@ -25,9 +25,6 @@ test_mat_v_3 = np.array([1., 3., 11.])
 
 test_mat_4 = np.array([[1., 1., 1.], [4., 3., -1.], [3., 5., 3.]])
 
-linalg.lu(test_mat_4)
-
-
 
 def back_substitution(A, b):
     m, n = A.shape
@@ -56,18 +53,16 @@ def gauss_no_pivoting(A, b):
     mat = np.copy(A)
     vet = np.copy(b)
     for i in range(0, n):
+        #check if one of the pivot element is null
         if mat[i][i] == 0:
-            for j in range(i+1, n):
-                if mat[j][i] != 0:
-                    swap(mat, vet, i, j)  
-                    break
+            raise ValueError("Null pivotal element")
+            return np.nan
         else:
            for j in range(i+1, n):
                if mat[j][i] != 0:
                    m = mat[j][i]/mat[i][i]
-                   for k in range(i, n):
-                       mat[j][k] -= mat[i][k] * m
-                   vet[j] -= vet[i] * m
+                   mat[j] -= m * mat[i]
+                   vet[j] -= m * vet[i]
     return mat, vet
 
 def gauss_partial_pivoting(A, b):
@@ -75,15 +70,19 @@ def gauss_partial_pivoting(A, b):
     mat = np.copy(A)
     vet = np.copy(b)
     for i in range(0, n):
+        #finding max value in the current column using numpy argmax function
+        #add the index i to the max_row index to take in account the previous steps of the alghoritm
+        #because for every step after the first it consider the examied column starting from the current row
         max_row = find_max_row(mat, i)
         if max_row != i:
-            swap(mat, vet, i, max_row)
+            #swap the row
+            mat[[i, max_row]] = mat[[max_row, i]]
+            vet[[i, max_row]] = vet[[max_row, i]]
         for j in range(i+1, n):
             if mat[j][i] != 0:
                 m = mat[j][i]/mat[i][i]
-                for k in range(i, n):
-                    mat[j][k] -= mat[i][k] * m
-                vet[j] -= vet[i] * m
+                mat[j] -= m * mat[i]
+                vet[j] -= m * vet[i]
     return mat, vet
 
 def gauss_total_pivoting(A, b):
@@ -97,15 +96,15 @@ def lu_decomposition_no_pivoting(A):
     U = np.copy(A)
     L = np.identity(n)
     for i in range(0, n):
-        max_row = find_max_row(U, i)
-        if max_row != i:
-            swap(U, None, i, max_row)
+        #check if one of the pivot element is null
+        if U[i][i] == 0:
+            raise ValueError("Null pivotal element")
+            return np.nan
         for j in range(i+1, n):
             if U[j][i] != 0:
                 m = U[j][i]/U[i][i]
-                L[j][i] = m
-                for k in range(i, n):
-                    U[j][k] -= U[i][k] * m
+                U[j] -= (m * U[i])
+                L[j, i] = m
     return U, L
     
 def lu_decomposition_pivoting(A):
@@ -118,7 +117,6 @@ def lu_decomposition_pivoting(A):
         #add the index i to the max_row index to take in account the previous steps of the alghoritm
         #because for every step after the first it consider the examied column starting from the current row
         max_row = np.abs(U[i:, i]).argmax() + i 
-        print(max_row)
         #if the max_row index is not equal to current index switch the value
         if max_row != i:
             #swap the row
@@ -127,7 +125,7 @@ def lu_decomposition_pivoting(A):
         for j in range(i+1, n):
             if U[j][i] != 0:
                 m = U[j][i]/U[i][i]
-                U[j] = U[j] - (m * U[i])
+                U[j] -= (m * U[i])
                 L[j, i] = m
     return U, L, P            
 
