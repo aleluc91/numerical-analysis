@@ -7,6 +7,7 @@ Created on Tue Jan  8 13:19:48 2019
 """
 
 import numpy as np
+from scipy import linalg
 
 rand_mat = np.random.randint(10, size = (3, 3))
 rand_vector = np.random.randint(5, size = 3)
@@ -21,6 +22,10 @@ test_mat_v_2 = np.array([0, 1, 1])
 
 test_mat_3 = np.array([[1., 1., 1.], [2., 3., 4.], [4., 9., 16.]])
 test_mat_v_3 = np.array([1., 3., 11.])
+
+test_mat_4 = np.array([[1., 1., 1.], [4., 3., -1.], [3., 5., 3.]])
+
+linalg.lu(test_mat_4)
 
 
 
@@ -60,7 +65,7 @@ def gauss_no_pivoting(A, b):
            for j in range(i+1, n):
                if mat[j][i] != 0:
                    m = mat[j][i]/mat[i][i]
-                   for k in range(0, n):
+                   for k in range(i, n):
                        mat[j][k] -= mat[i][k] * m
                    vet[j] -= vet[i] * m
     return mat, vet
@@ -76,11 +81,35 @@ def gauss_partial_pivoting(A, b):
         for j in range(i+1, n):
             if mat[j][i] != 0:
                 m = mat[j][i]/mat[i][i]
-                for k in range(0, n):
+                for k in range(i, n):
                     mat[j][k] -= mat[i][k] * m
                 vet[j] -= vet[i] * m
     return mat, vet
-                  
+
+def gauss_total_pivoting(A, b):
+    pass
+
+def gauss_jordan(A, b):
+    pass
+
+def lu_decomposition_no_pivoting(A):
+    n = len(A)
+    U = np.copy(A)
+    L = np.identity(n)
+    for i in range(0, n):
+        max_row = find_max_row(U, i)
+        if max_row != i:
+            swap(U, None, i, max_row)
+        for j in range(i+1, n):
+            if U[j][i] != 0:
+                m = U[j][i]/U[i][i]
+                L[j][i] = m
+                for k in range(i, n):
+                    U[j][k] -= U[i][k] * m
+    return U, L
+    
+def lu_decomposition_partial_pivoting(A, b):
+    pass                  
 
 def swap(A, b, i, j):
     m, n = A.shape
@@ -88,9 +117,10 @@ def swap(A, b, i, j):
         temp = A[j][k]
         A[j][k] = A[i][k]
         A[i][k] = temp
-    temp = b[j]
-    b[j] = b[i]
-    b[i] = temp
+    if b != None:
+        temp = b[j]
+        b[j] = b[i]
+        b[i] = temp
 
 def find_max_row(A, i):
     m, n = A.shape
